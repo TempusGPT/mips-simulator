@@ -57,6 +57,7 @@ export function createLanguage(): string {
 
     languages.registerCompletionItemProvider(language, {
         triggerCharacters: ["$"],
+
         provideCompletionItems(model, position) {
             const word = model.getWordUntilPosition(position);
             const text = model.getValue();
@@ -90,8 +91,21 @@ export function createLanguage(): string {
                 range,
             }));
 
-            return { suggestions: [...keywordsMap, ...registersMap, ...labelsMap] };
+            return {
+                suggestions: [...keywordsMap, ...registersMap, ...labelsMap],
+            };
         },
+    });
+
+    languages.setLanguageConfiguration(language, {
+        autoClosingPairs: [
+            { open: `'`, close: `'` },
+            { open: `"`, close: `"` },
+        ],
+        surroundingPairs: [
+            { open: `'`, close: `'` },
+            { open: `"`, close: `"` },
+        ],
     });
 
     languages.setMonarchTokensProvider(language, {
@@ -101,8 +115,7 @@ export function createLanguage(): string {
                 [/\.\w+/, "directive"],
                 [/\$[a-zA-Z0-9]+/, "register"],
                 [/0x[0-9A-Fa-f]+|\d+/, "number"],
-                [/"[^"]*"/, "string"],
-                [/'[^']*'/, "string"],
+                [/"[^"]*"|'[^']*'/, "string"],
                 [/#[^\n]*/, "comment"],
             ],
         },
